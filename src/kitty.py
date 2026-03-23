@@ -14,6 +14,7 @@ from ultralytics import YOLO
 import os
 from PIL import Image
 import numpy as np
+import sklearn
 
 # Load a pretrained YOLO model
 model = YOLO("../build/yolo26n.pt")
@@ -87,4 +88,21 @@ def listPicsWith(dir, classes, verbose=False):
     print(f"{usable} images have {", ".join(classes)} in them")
     return usable_files
     
+def togglePath(filepath):
+    """
+    Toggle between the depth map and the image path. This is done by replacing the relevant parts of the path. 
+    It checks which path is presented. 
 
+    Args:
+        Str: filepath - path to toggle
+    Returns:
+        Str: path to the other file 
+    """
+    if "groundtruth_depth" in filepath:
+        filepath = filepath.replace("/groundtruth_depth/","/image/")
+        filepath = filepath.replace("_sync_groundtruth_depth_","_sync_image_")
+    else:
+        filepath = filepath.replace("/image/","/groundtruth_depth/")
+        filepath = filepath.replace("_sync_image_","_sync_groundtruth_depth_")
+
+    return filepath 

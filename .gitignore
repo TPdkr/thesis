@@ -3,3 +3,4 @@
 *.pth
 */crops/*
 datasets
+*/__pycache__/*
