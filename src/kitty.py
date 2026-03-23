@@ -12,6 +12,8 @@ YOLO is used to filter for pictures that contain cars and to identify their boun
 
 from ultralytics import YOLO
 import os
+from PIL import Image
+import numpy as np
 
 # Load a pretrained YOLO model
 model = YOLO("../build/yolo26n.pt")
@@ -19,6 +21,27 @@ model = YOLO("../build/yolo26n.pt")
 # find all files in a given folder
 ds_path = "../datasets/depth_selection/val_selection_cropped/image/"
 search_for = ["car"]
+
+
+
+
+def depth_read(filename):
+    """
+    Convert an image to a depth map in the form of a numpy array. This is copied
+    from the KITTY dev kit. 
+    """
+    # loads depth map D from png file
+    # and returns it as a numpy array,
+    # for details see readme.txt
+
+    depth_png = np.array(Image.open(filename), dtype=int)
+    # make sure we have a proper 16bit depth map here.. not 8bit!
+    assert(np.max(depth_png) > 255)
+
+    depth = depth_png.astype(float) / 256.
+    depth[depth_png == 0] = -1.
+    return depth
+
 
 def listPicsWith(dir, classes, verbose=False):
     """
@@ -65,4 +88,3 @@ def listPicsWith(dir, classes, verbose=False):
     return usable_files
     
 
-listPicsWith(ds_path, search_for, True)
