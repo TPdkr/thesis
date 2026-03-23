@@ -1,3 +1,15 @@
+"""
+KITTY PREPROCESSING
+
+This file preprocesses the KITTY dataset from (kitty source)[https://www.cvlibs.net/datasets/kitti/eval_depth.php?benchmark=depth_prediction]
+selected validation data and test data sets.
+
+The goal is being able to integrate this into the torch workflow and only have data we care about with clear grouond truth values
+for depth instead of a cloud of points. 
+
+YOLO is used to filter for pictures that contain cars and to identify their bounding boxes. 
+"""
+
 from ultralytics import YOLO
 import os
 
