@@ -10,7 +10,15 @@ search_for = ["car"]
 
 def listPicsWith(dir, classes, verbose=False):
     """
-    
+    Return a list of pictures that contain specific classes listed in classes.
+
+    Args:
+        Str: dir - directory to search
+        List of strings: classes - classes to search for
+        Bool: verbose=False - debug mode
+
+    Returns:
+        List of strings: files that match the condition
     """
     # find all files in a given folder and covert their paths to be full
     files = os.listdir(dir)
