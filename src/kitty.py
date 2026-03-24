@@ -20,11 +20,9 @@ import sklearn
 model = YOLO("../build/yolo26n.pt")
 
 # find all files in a given folder
-ds_path = "../datasets/depth_selection/val_selection_cropped/image/"
-search_for = ["car"]
-
-
-
+KITTY_PATH = "../datasets/depth_selection/val_selection_cropped/image/"
+CAR_YOLO_CLASSES = [2]
+KITTY_CONF=0.5
 
 def depth_read(filename):
     """
@@ -44,13 +42,13 @@ def depth_read(filename):
     return depth
 
 
-def listPicsWith(dir, classes, verbose=False):
+def listPicsWith(dir, classes, conf=0.5, verbose=False):
     """
     Return a list of pictures that contain specific classes listed in classes.
 
     Args:
         Str: dir - directory to search
-        List of strings: classes - classes to search for
+        List of int: classes - classes to search for
         Bool: verbose=False - debug mode
 
     Returns:
@@ -68,7 +66,7 @@ def listPicsWith(dir, classes, verbose=False):
         print(files_full[0])
 
     # compute results for all given files 
-    results = model(files_full)
+    results = model.predict(files_full, conf=conf, classes=classes)
     # create a counter for the files that contains desired classes and a list
     usable=0
     usable_files=[]
@@ -80,12 +78,12 @@ def listPicsWith(dir, classes, verbose=False):
         names = [result.names[cls.item()] for cls in result.boxes.cls.int()] 
 
         # conditions are met
-        if set(classes).issubset(set(names)):
+        if len(names)>0:
             usable+=1
             usable_files.append(files_full[i])
 
     #return final results
-    print(f"{usable} images have {", ".join(classes)} in them")
+    print(f"{usable} images have {classes} in them")
     return usable_files
     
 def togglePath(filepath):
@@ -107,7 +105,7 @@ def togglePath(filepath):
 
     return filepath 
 
-def findRealDepth(image_depth):
+def findRealDepth(image_depth, verbose=False):
     #key varibles like height and width are initiated
     h,w = image_depth.shape
     ransac = sklearn.linear_model.RANSACRegressor(min_samples=0.6, max_trials=50, random_state=42)
@@ -125,49 +123,51 @@ def findRealDepth(image_depth):
     depth_values = depth_values[mask]
 
     coordinates = np.column_stack((x_grid, y_grid))
+    avg = np.mean(depth_values)
 
     #ransac is fitted. I use linear regression fit(default)
-    ransac.fit(coordinates, depth_values)
+    if(len(coordinates)>0):
+        ransac.fit(coordinates, depth_values)
 
-    #actual depth value is ransac in the middle
-    middle = np.array([w//2,h//2]).reshape(1, -1)
-    ransac_pred = ransac.predict(middle)
-    avg = np.mean(depth_values)
-    print(f"Ransac in the middle of the thing:{ransac_pred} the average depth is {avg}")
+        #actual depth value is ransac in the middle
+        middle = np.array([w//2,h//2]).reshape(1, -1)
+        ransac_pred = ransac.predict(middle)
+    else:
+        print("Managed to avoid the error?")
+        ransac_pred = avg
+    
+    if (verbose):
+        print(f"Ransac in the middle of the thing:{ransac_pred} the average depth is {avg}")
 
     return ransac_pred, avg
 
-def MatchDepthToCar(image_path, img, result, verbose=False):
-    #we need to get the depth map
+def MatchDepthToCar(image_path, result, verbose=False):
+    # we need to get the depth map
     depth_path = togglePath(image_path)
     depth_np = depth_read(depth_path)
 
 
-    #YOLO results are opened and we go through each object
+    # YOLO results are opened and we go through each object
     boxes = result.boxes #boxes are extracted from results
     xyxy = boxes.xyxy #boundaries for each
-
-    #for each box the image is cropped
-    crops = []
 
     ransac_preds=np.array([])   
     avgs=np.array([])
     for i, box in enumerate(xyxy):
-        x1,y1,x2,y2 = map(int, box.tolist())
-        crop = img[y1:y2, x1:x2]
-
-        print("class integers: ",result.boxes.cls.int())
+        # essential box info is extracted
+        x1,y1,x2,y2 = map(int, box.tolist())        
         names = [result.names[cls.item()] for cls in result.boxes.cls.int()]
-        print("class names: ", names)
-
+    
+        # debugging if needed
         if (verbose):
             print("detected box: {0}; x1: {1} x2: {2} y1: {3} y2: {4}".format(box,x1,x2,y1,y2))
-        crops.append(crop)
+            print("class names: ", names)
+            print("class integers: ",result.boxes.cls.int())
 
-        #depth array is cropped to the car
+        # depth array is cropped to the car
         depth=depth_np[y1:y2, x1:x2]
 
-        #ransac is used to find the actual depth
+        # ransac is used to find the actual depth along with the average. results saved
         ransac_pred, avg = findRealDepth(depth)
 
         ransac_preds = np.append(ransac_preds, ransac_pred)
