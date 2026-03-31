@@ -10,4 +10,3 @@ ultralytics
 rfdetr
 scikit-learn
 numpy
-pandas
