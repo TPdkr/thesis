@@ -17,7 +17,7 @@ from PIL import Image
 import numpy as np
 import sklearn
 # Load a pretrained YOLO model
-model = YOLO("../build/yolo26n.pt")
+MODEL_YOLO26n = YOLO("../build/yolo26n.pt")
 
 # find all files in a given folder
 KITTY_PATH = "../datasets/depth_selection/val_selection_cropped/image/"
@@ -65,8 +65,8 @@ def listPicsWith(dir, classes, conf=0.5, verbose=False):
         print(files[0])
         print(files_full[0])
 
-    # compute results for all given files 
-    results = model.predict(files_full, conf=conf, classes=classes)
+    # compute results for all given files model
+    results = MODEL_YOLO26n.predict(files_full, conf=conf, classes=classes)
     # create a counter for the files that contains desired classes and a list
     usable=0
     usable_files=[]
