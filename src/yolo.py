@@ -4,6 +4,7 @@ from PIL import Image
 import numpy as np
 import cv2
 import os
+import torch
 
 # Load a pretrained YOLO model
 MODEL_YOLO = YOLO("../build/yolo26n.pt", verbose=False)
@@ -27,40 +28,69 @@ def getEmbeds1(imgs, conf=0, classes=[], verbose=False):
         embedding: the resulting embedding vector
     """
 
-    batch_size = 300
-    #image is processed
-    raw = MODEL_YOLO.predict(imgs, conf=conf, classes=classes, embed=None, stream=True)
-    print(type(raw), type(raw[0]) if isinstance(raw, list) else "not a list")
-
+    batch_size_embed = 300
+    batch_size_pred = 1
     embeds = []
     objects_batch = []
+    i=0
+    skipped=0
 
-    for i, result in enumerate(raw):
-        
-        img_path=imgs[i]
-        img = np.array(Image.open(img_path), dtype=np.uint8)
+    paths_chunked = [imgs[i:i + batch_size_pred] for i in range(0, len(imgs), batch_size_pred)]
+
+    # I encountered an issue when a tensor was returned instead of results.
+    # Having a batch size should help with this. 
+
+    for j, batch in enumerate(paths_chunked):
+        #all images are predicted on
+        for result in MODEL_YOLO.predict(batch, conf=conf, classes=classes, stream=True):
+            # progress is tracked
+            i+=1
+            if i%50==0:
+                print(f"Progress: {i}/{len(imgs)}; {i/len(imgs)*100:.2f}%")
+
+            # Error handling here in case batch too big
+            # Guard against unexpected tensor returns
+            if not hasattr(result, 'boxes') or not hasattr(result, 'orig_img'):
+                print(f"Unexpected result type {type(result)} for {i-1}, skipping")
+                skipped += 1
+                continue
+
+            #og image is retrieved as well as the boxes
+            img = result.orig_img
+            boxes = result.boxes #boxes are extracted from results
     
-        #result = raw[0] if isinstance(raw, list) else raw
-        boxes = result.boxes #boxes are extracted from results
-        xyxy = boxes.xyxy #boundaries for each
+            #do we actually have any boes to go through?
+            if boxes is None or len(boxes) == 0:
+                print("Boxes not found for an image")
+                continue
 
-        #for each box the image is cropped
-        for i, box in enumerate(xyxy):
-            x1,y1,x2,y2 = map(int, box.tolist())
-            crop = img[y1:y2, x1:x2]
+            #for each object find detections and add them to the list
+            for box in boxes.xyxy:
+                x1, y1, x2, y2 = map(int, box.tolist())
+                crop = img[y1:y2, x1:x2]
 
-            if (verbose):
-                print("detected box: {0}; x1: {1} x2: {2} y1: {3} y2: {4}".format(box,x1,x2,y1,y2))
-            objects_batch.append(crop)
+                #checking if results are valid
+                if crop.size == 0 or crop.shape[0] < 2 or crop.shape[1] < 2:
+                    continue
 
+                if (verbose):
+                    print("detected box: {0}; x1: {1} x2: {2} y1: {3} y2: {4}".format(box,x1,x2,y1,y2))
+                #add final results
+                objects_batch.append(crop)           
+
+            #flush the batch
+            if len(objects_batch) >= batch_size_embed:
+                print("Processing batch")
+                embeds.extend(getEmbedFromCrops(objects_batch, verbose))
+                objects_batch = []  # Clear the batch
         
-        if len(objects_batch) >= batch_size:
-            print("Processing batch")
-            embeds.append(getEmbedFromCrops(objects_batch, verbose))
-            objects_batch = []  # Clear the batch
-        
-    if objects_batch:  # Process any remaining objects
-        embeds.append(getEmbedFromCrops(objects_batch, verbose))
+    if objects_batch:
+        embeds.extend(getEmbedFromCrops(objects_batch, verbose))
+        objects_batch = []  # Clear the batch
+
+    if verbose:
+        print(f"Toral embeddings found : {len(embeds)}")
+    print(f"Skipped {skipped} images due to invalid results out of {i}")
         
     return embeds
 
