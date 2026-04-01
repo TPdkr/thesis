@@ -151,6 +151,68 @@ def getEmbeds2(imgs, verbose=False):
     return embedding
 
 # OPTION 3
+def getEmbedFromResults(results, verbose=False):
+
+    #KEY VARIABLES
+    batch_size_embed = 300
+    embeds = []#final embeddings list
+    objects_batch = []#crops of object to embed
+    i=0#progress counter
+    skipped=0#number of objects skipped
+
+    #this is a midifed embed1 that takes results as inputs
+    for result in results:
+        # progress is tracked
+        if i%50==0:
+            print(f"Progress: {i}/{len(results)}; {i/len(results)*100:.2f}%")
+
+        # Error handling here in case batch too big
+        # Guard against unexpected tensor returns
+        if not hasattr(result, 'boxes') or not hasattr(result, 'orig_img'):
+            print(f"Unexpected result type {type(result)} for {i}, skipping")
+            skipped += 1
+            continue
+
+        #og image is retrieved as well as the boxes
+        img = result.orig_img
+        boxes = result.boxes #boxes are extracted from results
+
+        #do we actually have any boes to go through?
+        if boxes is None or len(boxes) == 0:
+            print("Boxes not found for an image")
+            continue
+
+        #for each object find detections and add them to the list
+        for box in boxes.xyxy:
+            x1, y1, x2, y2 = map(int, box.tolist())
+            crop = img[y1:y2, x1:x2]
+
+            #checking if results are valid
+            if crop.size == 0 or crop.shape[0] < 2 or crop.shape[1] < 2:
+                continue
+            #add final results
+            objects_batch.append(crop)           
+
+        #flush the batch
+        if len(objects_batch) >= batch_size_embed:
+            print("Processing batch")
+            embeds.extend(getEmbedFromCrops(objects_batch, verbose))
+            objects_batch = []  # Clear the batch
+
+        #update progress
+        i+=1
+        
+    #if something remains
+    if objects_batch:
+        embeds.extend(getEmbedFromCrops(objects_batch, verbose))
+        objects_batch = []  # Clear the batch
+
+    if verbose:
+        print(f"Total embeddings found : {len(embeds)}")
+    print(f"Skipped {skipped} images due to invalid results out of {i}")
+        
+    return embeds
+
 def getEmbedFromCrops(crops, verbose=False):
     """
     Get a list of embedding from YOLO26n model based on a list of crops in an image.
@@ -164,6 +226,7 @@ def getEmbedFromCrops(crops, verbose=False):
     #batch embedding speeds up time for processing
     embedding = MODEL_YOLO.embed(crops)
     if verbose:
+        print("\nConverting crops to embeddings")
         print("Embedding is a tensor of length : {0}".format(len(embedding)))
         print("Embedding vector is of length: {0}".format(len(embedding[0])))
 
