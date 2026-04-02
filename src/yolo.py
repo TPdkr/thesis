@@ -8,7 +8,7 @@ import torch
 
 # Load a pretrained YOLO model
 MODEL_YOLO = YOLO("../build/yolo26n.pt", verbose=False)
-CONFIDENCE = 0.5
+CONFIDENCE_YOLO = 0.5
 CLASSES_YOLO=[2]
 
 print("YOLO26n MODEL LOADED\n")
@@ -99,7 +99,7 @@ def getEmbeds1(imgs, conf=0, classes=[], verbose=False):
 cropper = solutions.ObjectCropper(
     model="../build/yolo26n.pt",  
     classes=CLASSES_YOLO,  #classes to crop
-    conf=CONFIDENCE,   #confidence threshold
+    conf=CONFIDENCE_YOLO,   #confidence threshold
     verbose=True,
     crop_dir="../imgs/crops/"
 )

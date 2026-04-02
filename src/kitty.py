@@ -16,13 +16,14 @@ import cv2
 from PIL import Image
 import numpy as np
 import sklearn
+#from yolo import CLASSES_YOLO, CONFIDENCE_YOLO
 # Load a pretrained YOLO model
-MODEL_YOLO26n = YOLO("../build/yolo26n.pt")
+MODEL_YOLO = YOLO("../build/yolo26n.pt")
 
 # find all files in a given folder
 KITTY_PATH = "../datasets/depth_selection/val_selection_cropped/image/"
-CAR_YOLO_CLASSES = [2]
-KITTY_CONF=0.5
+#CLASSES_YOLO = [2]
+#CONFIDENCE_YOLO=0.5
 
 def depth_read(filename):
     """
@@ -66,7 +67,7 @@ def listPicsWith(dir, classes, conf=0.5, verbose=False):
         print(files_full[0])
 
     # compute results for all given files model
-    results = MODEL_YOLO26n.predict(files_full, conf=conf, classes=classes)
+    results = MODEL_YOLO.predict(files_full, conf=conf, classes=classes)
     # create a counter for the files that contains desired classes and a list
     usable=0
     usable_files=[]
@@ -123,18 +124,20 @@ def findRealDepth(image_depth, verbose=False):
     depth_values = depth_values[mask]
 
     coordinates = np.column_stack((x_grid, y_grid))
-    avg = np.mean(depth_values)
-
+    avg=None
+    
     #ransac is fitted. I use linear regression fit(default)
     if(len(coordinates)>0):
         ransac.fit(coordinates, depth_values)
+        avg = np.mean(depth_values)
 
         #actual depth value is ransac in the middle
         middle = np.array([w//2,h//2]).reshape(1, -1)
         ransac_pred = ransac.predict(middle)
     else:
-        print("Managed to avoid the error?")
-        ransac_pred = avg
+        print("EMPTY SLICE OF THE IMAGE, NO DEPTH :(")
+        ransac_pred = -1
+        avg = -1
     
     if (verbose):
         print(f"Ransac in the middle of the thing:{ransac_pred} the average depth is {avg}")
