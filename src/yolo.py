@@ -9,7 +9,8 @@ import torch
 # Load a pretrained YOLO model
 MODEL_YOLO = YOLO("../build/yolo26n.pt", verbose=False)
 CONFIDENCE_YOLO = 0.5
-CLASSES_YOLO=[2]
+CLASSES_YOLO=[2]#car
+#CLASSES_YOLO=[0,1,2,3,5,7]#person, bicycle, car, motorcycle, bus, truck
 
 print("YOLO26n MODEL LOADED\n")
 

@@ -10,11 +10,13 @@ def getDevice():
     """
     device=None
     if torch.cuda.is_available():
-        device = "cuda" # Use NVIDIA GPU (if available)
+        device = "cuda" #NVIDIA
     elif torch.backends.mps.is_available():
-        device = "mps" # Use Apple Silicon GPU (if available)
+        device = "mps" #Apple🍏
     elif torch.xpu.is_available():
-        device = "xpu" # Use intel GPU
+        device = "xpu" #Intel
     else:
-        device = "cpu" # Default to CPU if no GPU is available
+        device = "cpu" #Default
+
+    print(f"Using device: {device} :3")
     return device
