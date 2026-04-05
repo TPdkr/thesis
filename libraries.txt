@@ -7,6 +7,16 @@ intel-extension-for-pytorch==2.8.10+xpu
 
 ultralytics
 
+# RF-DETR
 rfdetr
+
+# Generally useful stuff needed
 scikit-learn
 numpy
+matplotlib
+
+# DINOv3 / HuggingFace
+transformers>=4.56.0
+huggingface_hub
+Pillow
+requests

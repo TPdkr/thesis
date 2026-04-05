@@ -20,3 +20,5 @@ def getDevice():
 
     print(f"Using device: {device} :3")
     return device
+
+getDevice()
