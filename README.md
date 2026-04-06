@@ -69,6 +69,9 @@ tree --dirsfirst --gitignore -L 2
 
 ## Set Up
 
+**This setup is written for VS code and might not work fully on conda or colab due to differences in how these platforms work
+and manage files and libraries.**
+
 First create a virtual environment and enter it in order to run the code there. 
 
 Then run the code below in order to load all the libraries into the machine. If the code 
@@ -100,5 +103,12 @@ be adjusted based on user needs.
 
 In order to access DINOv3 for this project I made a Hugging face account and requested access at [https://huggingface.co/facebook/dinov3-vits16-pretrain-lvd1689m](https://huggingface.co/facebook/dinov3-vits16-pretrain-lvd1689m).
 
-It took INSERT TIME for the request to get approved and afterwards I was able to access the model via the API and successfully make the code
+It took less than an hour for the request to get approved and afterwards I was able to access the model via the API and successfully make the code
 work with extractign image embeddings.
+
+In order to make the thing work it is necessary to give the CLI a valid token which can be obtained from the website which can be done
+during install or with the command below.
+
+```
+huggingface-cli login
+```

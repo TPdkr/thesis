@@ -182,6 +182,21 @@ def getCropsFromResult(result, verbose=False):
 
     return crops
 
+def getCropsFromResults(results, verbose=False):
+    """
+    Extrtact all crops from results array and return as a list. 
+
+    Args:
+        results: list of YOLO results objects
+        verbose: to print or not debug info
+    Returns:
+        crops: list of numpy ndarray of crops of images
+    """
+    crops = []
+    for result in results:
+        crops.extend(getCropsFromResult(result, verbose))
+    return crops
+
 def getEmbedFromCrops(crops, verbose=False):
     """
     Get a list of embedding from YOLO26n model based on a list of crops in an image.
