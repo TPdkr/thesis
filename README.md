@@ -6,7 +6,7 @@ Bachelor's thesis repo. Depth estimation with computer vision for autonomous rac
 
 - ultralytics YOLO26n model (downloaded via pip)
 - DINOv3 developed by Meta(hugging face)
-- KITTI dataset((kitty source)[https://www.cvlibs.net/datasets/kitti/eval_depth.php?benchmark=depth_prediction]
+- KITTI dataset([kitty source](https://www.cvlibs.net/datasets/kitti/eval_depth.php?benchmark=depth_prediction))
 selected validation data and test data sets)
 - libraries found in [libraries.txt](./libraries.txt) file
 - Constructor racing data
@@ -50,19 +50,23 @@ tree --dirsfirst --gitignore -L 2
 7 directories, 20 files
 ```
 
-**Main dir:**
+### Main dir: repository info
 1. libraries.txt file containing libraries list
 2. README.md
 
-**build:** contains pre trained models like yolo when running code
+### build: contains pre trained models like yolo when running code
 
-**data:** contains data produced when running the code like embeddings arrays
+### data: contains data produced when running the code like embeddings arrays
 
-**imgs:** a set of test images
+### imgs: a set of test images
 
-**src:** python source code
-1. yolo.py & yolo.ipynb
-2. kitty.py & kitty.ipynb
+### src: python source code
+1. ***yolo.py & yolo.ipynb*** functions utilizing YOLO and example use cases
+2. ***kitty.py & kitty.ipynb*** functions using KITTI dataset and code to turn objects in it into Embeddings paired to depths
+3. ***model.ipynb training*** a model based on embeddings with depths
+4. ***dino.ipynb testing dinov3*** to make sure it works locally
+5. ***utils.py*** useful function that fall out of scope of other files
+6. ***yolo_test.py*** just a file making sure the model works and data can be read
 
 **visualizations:** contains the graphics and visualizations made during the project
 
