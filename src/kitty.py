@@ -16,9 +16,11 @@ import cv2
 from PIL import Image
 import numpy as np
 import sklearn
+
+from utils import getDevice
 #from yolo import CLASSES_YOLO, CONFIDENCE_YOLO
 # Load a pretrained YOLO model
-MODEL_YOLO = YOLO("../build/yolo26n.pt")
+MODEL_YOLO = YOLO("../build/yolo26n.pt").to(getDevice())
 
 # find all files in a given folder
 KITTY_PATH = "../datasets/depth_selection/val_selection_cropped/image/"
