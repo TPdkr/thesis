@@ -210,7 +210,7 @@ def getEmbedFromCrops(crops):
         embedding: the resulting embedding vector
     """
     #batch embedding speeds up time for processing
-    embedding = MODEL_YOLO_EMBED.embed(crops)
+    embedding = MODEL_YOLO.embed(crops)
     return embedding
 
 # OPTION 3

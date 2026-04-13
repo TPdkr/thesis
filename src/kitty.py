@@ -87,6 +87,7 @@ def listPicsWith(dir, classes, conf=0.5, verbose=False):
 
     #return final results
     print(f"{usable} images have {classes} in them")
+    del results, files, files_full
     return usable_files
     
 def togglePath(filepath):
