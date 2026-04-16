@@ -42,3 +42,10 @@ def setSeed(seed=SEED):
 
 print(f"Setting seed to {SEED}:3")
 setSeed()
+
+#TRAINING FUNCTION FOR PREPROCESSING :3========================================
+
+def collate_fn(batch):
+    images  = [item[0] for item in batch]
+    targets = [item[1] for item in batch]
+    return images, targets
