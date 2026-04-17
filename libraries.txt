@@ -15,6 +15,7 @@ rfdetr
 scikit-learn
 numpy
 matplotlib
+pandas
 
 # DINOv3 / HuggingFace
 transformers>=4.56.0
