@@ -1,6 +1,18 @@
+import gc
 import matplotlib.pyplot as plt
 import numpy as np
+from torch import nn
+import torch
+
 def lossPlot(losses,title="", save_as="../visualizations/pic.png",ax=None,):
+    """
+    Create a simple loss plot between several arrays
+
+    Args:
+        losses: dictionary list containing the data to be plotted
+        title: the title of the plot
+        save_as: save the plot as a file to this location
+    """
     #plot indivisual lines on the graph
     for loss in losses:
         values = loss["values"]
@@ -30,3 +42,77 @@ def lossPlot(losses,title="", save_as="../visualizations/pic.png",ax=None,):
         ax.set_title(title)
         ax.grid(color='gray', linestyle='--', linewidth=0.5)
         ax.legend()
+
+def overviewPlot(error_scores_df, depths_train_df, depths_test_df, title, save_as="../visualizations/pic.png", markers=True):
+    # TRAINING AND TEST LOS IN EACH EPOCH
+    train_error = error_scores_df["train_error"].tolist()
+    test_error = error_scores_df["test_error"].tolist()
+
+    # ERROR RATE DEPENDING ON DEPTH
+    error_fn = nn.L1Loss()
+    error= np.array([])
+    for i in range (8):
+        # masks
+        depths_in_range_true = (depths_test_df["true_depths_test"]<=(i+1)*10) & (depths_test_df["true_depths_test"]>=i*10)
+
+        # data 
+        true_depths = depths_test_df["true_depths_test"][depths_in_range_true]
+        predicted_depths = depths_test_df["predicted_depths_test"][depths_in_range_true]
+
+        error_rate = error_fn(torch.from_numpy(true_depths.values), torch.from_numpy(predicted_depths.values))
+        error = np.append(error, error_rate.item())
+
+    # BASIC PLOT OBJECT CREATED
+    fig, axes = plt.subplots(nrows=2, ncols=2, figsize=(12, 10))
+    axes = axes.flatten()
+
+    # PLOT THE DATA
+    for i, ax in enumerate(axes):
+        if i == 0:
+            if markers:
+                ax.plot(train_error, label="Train Loss", color="royalblue", marker='o')
+                ax.plot(test_error, label="Validation Loss", color="darkred", marker='s')
+            else: 
+                ax.plot(train_error, label="Train Loss", color="royalblue")
+                ax.plot(test_error, label="Validation Loss", color="darkred")
+            ax.set_xlabel("Iteration")
+            ax.set_ylabel("Loss MAE")
+            ax.set_ylim(0, 15)
+            ax.set_xlim(0, len(train_error)-1)
+            ax.set_yticks(np.arange(0, 15, 1))
+            ax.set_title("Training Loss over Time")
+            ax.grid(color='gray', linestyle='--', linewidth=0.5)
+            ax.legend()
+        if i==1:
+            #true depths are shown along the predicted depths for tain
+            ax.hist(depths_train_df["true_depths"], bins=30, label="True Depths Train", color="royalblue", alpha=0.7)
+            ax.hist(depths_train_df["predicted_depths"], bins=30, label="Predicted Depths Train", color="darkred", alpha=0.7)
+            ax.set_xlabel("True Depths")
+            ax.set_ylabel("Frequency")
+            ax.set_title("Distribution of True Depths in training")
+            ax.legend()
+        if i==2:
+            #true depths are shown along the predicted depths for test
+            ax.hist(depths_test_df["true_depths_test"], bins=30, label="True Depths Test", color="royalblue", alpha=0.7)
+            ax.hist(depths_test_df["predicted_depths_test"], bins=30, label="Predicted Depths Test", color="darkred", alpha=0.7)
+            ax.set_xlabel("True Depths")
+            ax.set_ylabel("Frequency")
+            ax.set_title("Distribution of True Depths in testing")
+            ax.legend()
+        if i==3:
+            ax.plot(np.arange(0, 80, 10), error, label="Error Rate", color="darkred", marker='o')
+            ax.set_xlabel("Depth Range (m)")
+            ax.set_ylabel("Loss MAE")
+            ax.set_title("Error Rate vs depth")
+            ax.set_xticks(np.arange(0, 80, 10))
+            ax.set_ylim(ymin=0, ymax=10)
+            ax.grid(color='gray', linestyle='--', linewidth=0.5)
+            ax.legend()
+
+    plt.suptitle(title)
+    plt.tight_layout()
+    fig.savefig(save_as)
+    plt.show()
+
+    del error_scores_df, depths_train_df, depths_test_df, error
+    gc.collect()
