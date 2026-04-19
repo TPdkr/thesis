@@ -31,23 +31,24 @@ tree --dirsfirst --gitignore -L 2
 │   └── result1.jpg
 ├── src
 │   ├── dino.ipynb
-│   ├── kitty.ipynb
+│   ├── dino_yolo_embed.ipynb
+│   ├── dino_yolo_embed_og.ipynb
 │   ├── kitty.py
-│   ├── model.ipynb
+│   ├── embed_model.ipynb
 │   ├── rfdetr_embed.py
 │   ├── rfdetr_test.py
 │   ├── utils.py
+│   ├── visuals.py
 │   ├── yolo.ipynb
 │   ├── yolo.py
-│   └── yolo_test.py
+│   ├── yolo_test.py
+│   └── zhu_model.ipynb
 ├── visualizations
-│   ├── depthmap_vs_image_kitty.png
-│   ├── loss_plot.png
-│   └── ransac_vs_avg.png
+│   └── *.png
 ├── libraries.txt
 └── README.md
 
-7 directories, 20 files
+7 directories, 35 files
 ```
 
 ### Main dir: repository info
@@ -62,13 +63,42 @@ tree --dirsfirst --gitignore -L 2
 
 ### src: python source code
 1. ***yolo.py & yolo.ipynb*** functions utilizing YOLO and example use cases
-2. ***kitty.py & kitty.ipynb*** functions using KITTI dataset and code to turn objects in it into Embeddings paired to depths
-3. ***model.ipynb training*** a model based on embeddings with depths
+2. ***kitty.py*** functions using KITTI dataset
+3. ***utils.py*** useful function that fall out of scope of other files
+4. ***visuals.py*** functions used for visualizations of the data
 4. ***dino.ipynb testing dinov3*** to make sure it works locally
-5. ***utils.py*** useful function that fall out of scope of other files
-6. ***yolo_test.py*** just a file making sure the model works and data can be read
 
-**visualizations:** contains the graphics and visualizations made during the project
+Other:
+5. ***yolo_test.py*** just a file making sure the model works and data can be read
+
+Core code and main body of code:
+1. ***dino_yolo_embed_og.ipynb*** extract embeddings based on ground truth bounding boxes
+2. ***dino_yolo_embed.ipynb*** file to extract embeddings from dino and yolo based on yolo bounding boxes
+3. ***embed_model.ipynb*** models based on embeddings training and visualizations
+4. ***zhu_model.ipynb*** model that utilizes vgg16 and requires longer training to predict depths
+
+### visualizations: contains the graphics and visualizations made during the project
+
+## Running the code to get results
+
+The ASCII text below shows how the code should be executed kinda like a pipeline that should take shorter time
+for embeddings based approach and over several hours for the vgg16 based approach.
+
+```
+                                                  
+1 dino_yolo_embed_og.ipynb───>embed_model.ipynb   
+                             (USE_OG_BOXES=True)  
+                                                  
+2 dino_yolo_embed.ipynb ─────>embed_model.ipynb   
+                             (USE_OG_BOXES=False) 
+                                                  
+3 zhu_model.ipynb                                 
+                                                  
+```
+
+1. Embeddings based approach with ground truth boxes used
+2. Embedddings based approach with YOLO recognized boxes
+3. approach based on vgg16 and a depth regressor
 
 
 ## Set Up
