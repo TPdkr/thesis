@@ -146,3 +146,13 @@ during install or with the command below.
 ```
 huggingface-cli login
 ```
+
+### Depth anything installation
+
+You can go to the source of these instructions on [depth-anything/DA3METRIC-LARGE](https://huggingface.co/depth-anything/DA3METRIC-LARGE) or see the steps below that replicate the instructions on the website for an install.
+
+```
+git clone https://github.com/ByteDance-Seed/depth-anything-3
+cd depth-anything-3
+pip install -e .
+```
