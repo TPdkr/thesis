@@ -22,3 +22,6 @@ transformers>=4.56.0
 huggingface_hub
 Pillow
 requests
+
+# XGB boost for the depth everything to work
+xgboost
