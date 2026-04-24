@@ -3,6 +3,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 from torch import nn
 import torch
+from types import SimpleNamespace
+
+COLORS = SimpleNamespace(
+    YOLO=SimpleNamespace(train="blueviolet", test="crimson"),
+    DINO=SimpleNamespace(train="orangered",  test="maroon"),
+    VGG=SimpleNamespace(train="cyan",        test="darkolivegreen"),
+    DE=SimpleNamespace(train="navy",         test="indigo"),
+)
 
 def lossPlot(losses,title="", save_as="../visualizations/pic.png",ax=None,):
     """
@@ -43,7 +51,7 @@ def lossPlot(losses,title="", save_as="../visualizations/pic.png",ax=None,):
         ax.grid(color='gray', linestyle='--', linewidth=0.5)
         ax.legend()
 
-def overviewPlot(error_scores_df, depths_train_df, depths_test_df, title, save_as="../visualizations/pic.png", markers=True):
+def overviewPlot(error_scores_df, depths_train_df, depths_test_df, title, save_as="../visualizations/pic.png", markers=True, train_color="royalblue", test_color="darkred"):
     # TRAINING AND TEST LOS IN EACH EPOCH
     train_error = error_scores_df["train_error"].tolist()
     test_error = error_scores_df["test_error"].tolist()
@@ -70,8 +78,8 @@ def overviewPlot(error_scores_df, depths_train_df, depths_test_df, title, save_a
     for i, ax in enumerate(axes):
         if i == 0:
             if markers:
-                ax.plot(train_error, label="Train Loss", color="royalblue", marker='o')
-                ax.plot(test_error, label="Validation Loss", color="darkred", marker='s')
+                ax.plot(train_error, label="Train Loss", color=train_color, marker='o')
+                ax.plot(test_error, label="Validation Loss", color=test_color, marker='s')
             else: 
                 ax.plot(train_error, label="Train Loss", color="royalblue")
                 ax.plot(test_error, label="Validation Loss", color="darkred")
@@ -85,22 +93,22 @@ def overviewPlot(error_scores_df, depths_train_df, depths_test_df, title, save_a
             ax.legend()
         if i==1:
             #true depths are shown along the predicted depths for tain
-            ax.hist(depths_train_df["true_depths"], bins=30, label="True Depths Train", color="royalblue", alpha=0.7)
-            ax.hist(depths_train_df["predicted_depths"], bins=30, label="Predicted Depths Train", color="darkred", alpha=0.7)
+            ax.hist(depths_train_df["true_depths"], bins=30, label="True Depths Train", color=train_color, alpha=0.7)
+            ax.hist(depths_train_df["predicted_depths"], bins=30, label="Predicted Depths Train", color=test_color, alpha=0.7)
             ax.set_xlabel("True Depths")
             ax.set_ylabel("Frequency")
             ax.set_title("Distribution of True Depths in training")
             ax.legend()
         if i==2:
             #true depths are shown along the predicted depths for test
-            ax.hist(depths_test_df["true_depths_test"], bins=30, label="True Depths Test", color="royalblue", alpha=0.7)
-            ax.hist(depths_test_df["predicted_depths_test"], bins=30, label="Predicted Depths Test", color="darkred", alpha=0.7)
+            ax.hist(depths_test_df["true_depths_test"], bins=30, label="True Depths Test", color=train_color, alpha=0.7)
+            ax.hist(depths_test_df["predicted_depths_test"], bins=30, label="Predicted Depths Test", color=test_color, alpha=0.7)
             ax.set_xlabel("True Depths")
             ax.set_ylabel("Frequency")
             ax.set_title("Distribution of True Depths in testing")
             ax.legend()
         if i==3:
-            ax.plot(np.arange(0, 80, 10), error, label="Error Rate", color="darkred", marker='o')
+            ax.plot(np.arange(0, 80, 10), error, label="Error Rate", color=test_color, marker='o')
             ax.set_xlabel("Depth Range (m)")
             ax.set_ylabel("Loss MAE")
             ax.set_title("Error Rate vs depth")
