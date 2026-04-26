@@ -46,7 +46,7 @@ def lossPlot(losses,title="", save_as="../visualizations/pic.png",ax=None,):
     else:
         ax.set_ylabel("Loss MAE")
         ax.set_ylim(0, 20)
-        ax.set_yticks(np.arange(0, n, 1))
+        ax.set_yticks(np.arange(0, 20, 1))
         ax.set_title(title)
         ax.grid(color='gray', linestyle='--', linewidth=0.5)
         ax.legend()
@@ -70,6 +70,21 @@ def overviewPlot(error_scores_df, depths_train_df, depths_test_df, title, save_a
         error_rate = error_fn(torch.from_numpy(true_depths.values), torch.from_numpy(predicted_depths.values))
         error = np.append(error, error_rate.item())
 
+    # TOTAL ERROR RATES
+
+    MAE = error_fn(
+        torch.from_numpy(depths_test_df["true_depths_test"].values),
+        torch.from_numpy(depths_test_df["predicted_depths_test"].values)
+    ).item()
+
+    error_fn_rmse = torch.nn.MSELoss()
+    RMSE = error_fn_rmse(
+        torch.from_numpy(depths_test_df["true_depths_test"].values),
+        torch.from_numpy(depths_test_df["predicted_depths_test"].values)
+    ).item()
+
+    title_suffix = f" MAE: {MAE:.3f} RMSE: {RMSE:.3f}"
+
     # BASIC PLOT OBJECT CREATED
     fig, axes = plt.subplots(nrows=2, ncols=2, figsize=(12, 10))
     axes = axes.flatten()
@@ -81,8 +96,8 @@ def overviewPlot(error_scores_df, depths_train_df, depths_test_df, title, save_a
                 ax.plot(train_error, label="Train Loss", color=train_color, marker='o')
                 ax.plot(test_error, label="Validation Loss", color=test_color, marker='s')
             else: 
-                ax.plot(train_error, label="Train Loss", color="royalblue")
-                ax.plot(test_error, label="Validation Loss", color="darkred")
+                ax.plot(train_error, label="Train Loss", color=train_color)
+                ax.plot(test_error, label="Validation Loss", color=test_color)
             ax.set_xlabel("Iteration")
             ax.set_ylabel("Loss MAE")
             ax.set_ylim(0, 15)
@@ -117,7 +132,7 @@ def overviewPlot(error_scores_df, depths_train_df, depths_test_df, title, save_a
             ax.grid(color='gray', linestyle='--', linewidth=0.5)
             ax.legend()
 
-    plt.suptitle(title)
+    plt.suptitle(f"{title}{title_suffix}")
     plt.tight_layout()
     fig.savefig(save_as)
     plt.show()
