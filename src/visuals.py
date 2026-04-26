@@ -129,6 +129,7 @@ def overviewPlot(error_scores_df, depths_train_df, depths_test_df, title, save_a
             ax.set_title("Error Rate vs depth")
             ax.set_xticks(np.arange(0, 80, 10))
             ax.set_ylim(ymin=0, ymax=10)
+            ax.set_yticks(np.arange(0,10,1))
             ax.grid(color='gray', linestyle='--', linewidth=0.5)
             ax.legend()
 
