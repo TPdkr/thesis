@@ -6,7 +6,7 @@ import torch
 from types import SimpleNamespace
 
 COLORS = SimpleNamespace(
-    YOLO=SimpleNamespace(train="blueviolet", test="crimson"),
+    YOLO=SimpleNamespace(train="deepskyblue", test="navy"),
     DINO=SimpleNamespace(train="orangered",  test="maroon"),
     VGG=SimpleNamespace(train="cyan",        test="darkolivegreen"),
     DE=SimpleNamespace(train="navy",         test="indigo"),
