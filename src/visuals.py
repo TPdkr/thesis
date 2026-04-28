@@ -8,6 +8,7 @@ from types import SimpleNamespace
 COLORS = SimpleNamespace(
     YOLO=SimpleNamespace(train="deepskyblue", test="navy"),
     DINO=SimpleNamespace(train="orangered",  test="maroon"),
+    DINOP=SimpleNamespace(train="gold", test="darkgoldenrod"),
     VGG=SimpleNamespace(train="cyan",        test="darkolivegreen"),
     DE=SimpleNamespace(train="navy",         test="indigo"),
 )
