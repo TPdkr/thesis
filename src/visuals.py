@@ -21,6 +21,7 @@ def lossPlot(losses,title="", save_as="../visualizations/pic.png",ax=None,):
         losses: dictionary list containing the data to be plotted
         title: the title of the plot
         save_as: save the plot as a file to this location
+        ax: if provided axes is used instead of big plot
     """
     #plot indivisual lines on the graph
     for loss in losses:

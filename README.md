@@ -1,6 +1,6 @@
 # About
 
-Bachelor's thesis repo. Depth estimation with computer vision for autonomous race cars. 
+Bachelor's thesis repo. Object specific depth estimation with computer vision for autonomous cars. 
 
 ## Resources and sources
 
@@ -30,11 +30,12 @@ tree --dirsfirst --gitignore -L 2
 │   ├── result0.jpg
 │   └── result1.jpg
 ├── src
+│   ├── da_model.ipynb
 │   ├── dino.ipynb
 │   ├── dino_yolo_embed.ipynb
 │   ├── dino_yolo_embed_og.ipynb
-│   ├── kitty.py
 │   ├── embed_model.ipynb
+│   ├── kitty.py
 │   ├── rfdetr_embed.py
 │   ├── rfdetr_test.py
 │   ├── utils.py
@@ -44,20 +45,25 @@ tree --dirsfirst --gitignore -L 2
 │   ├── yolo_test.py
 │   └── zhu_model.ipynb
 ├── visualizations
-│   └── *.png
+│   ├── ....
 ├── libraries.txt
 └── README.md
 
-7 directories, 35 files
+7 directories, 38 files
 ```
 
 ### Main dir: repository info
 1. libraries.txt file containing libraries list
 2. README.md
+3. .gitignore to prevent datasets and such going into the repo
 
 ### build: contains pre trained models like yolo when running code
 
+It also contains the models trained using this project by default.
+
 ### data: contains data produced when running the code like embeddings arrays
+
+Also, test results are there in form of csv files as this allows to easily recreate all graphs and adjust them as needed.
 
 ### imgs: a set of test images
 
@@ -76,6 +82,7 @@ Core code and main body of code:
 2. ***dino_yolo_embed.ipynb*** file to extract embeddings from dino and yolo based on yolo bounding boxes
 3. ***embed_model.ipynb*** models based on embeddings training and visualizations
 4. ***zhu_model.ipynb*** model that utilizes vgg16 and requires longer training to predict depths
+5. ***da_model.ipynb*** the depth anythign v3 based model
 
 ### visualizations: contains the graphics and visualizations made during the project
 
@@ -92,13 +99,16 @@ for embeddings based approach and over several hours for the vgg16 based approac
 2 dino_yolo_embed.ipynb ─────>embed_model.ipynb   
                              (USE_OG_BOXES=False) 
                                                   
-3 zhu_model.ipynb                                 
+3 zhu_model.ipynb       
+
+4 da_model.ipynb
                                                   
 ```
 
 1. Embeddings based approach with ground truth boxes used
 2. Embedddings based approach with YOLO recognized boxes
 3. approach based on vgg16 and a depth regressor
+4. depth anything v3 based approach
 
 
 ## Set Up
@@ -111,8 +121,7 @@ First create a virtual environment and enter it in order to run the code there.
 Then run the code below in order to load all the libraries into the machine. If the code 
 is running into memory issues it might help to purge pip cache or recreate the venv.
 
-Also, I encountered memory issues when running in the built in VS code terminal. However, switching to the 
-system terminal helpd and no problems were encountered further.
+Also, I encountered memory issues when running flatpak version of VS code. Your system package manager version is recommened to avoid them.
 
 Using not the latest version of python is recommended at the time. I used 3.12 as 3.14 did not have
 builds of the libraries available yet. This can be chosen when creating venv. 
@@ -149,7 +158,7 @@ huggingface-cli login
 
 ### Depth anything installation
 
-You can go to the source of these instructions on [depth-anything/DA3METRIC-LARGE](https://huggingface.co/depth-anything/DA3METRIC-LARGE) or see the steps below that replicate the instructions on the website for an install.
+You can go to the source of these instructions on [depth-anything/DA3METRIC-LARGE](https://huggingface.co/depth-anything/DA3METRIC-LARGE) or see the steps below that replicate the instructions on the website for an install. I recommened running them in src dir.
 
 ```
 git clone https://github.com/ByteDance-Seed/depth-anything-3
