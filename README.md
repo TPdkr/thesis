@@ -2,6 +2,10 @@
 
 Bachelor's thesis repo. Object specific depth estimation with computer vision for autonomous cars. 
 
+[FULL SOURCE CODE AND EXPERIMENT RESULTS ON GITHUB](https://github.com/TPdkr/thesis)
+
+[AI USAGE DISCLOSURE](./ai_usage_disclosure.md)
+
 ## Resources and sources
 
 - ultralytics YOLO26n model (downloaded via pip)
@@ -47,6 +51,7 @@ tree --dirsfirst --gitignore -L 2
 ├── visualizations
 │   ├── ....
 ├── libraries.txt
+├── ai_usage_disclosure.md
 └── README.md
 
 7 directories, 38 files
@@ -56,6 +61,7 @@ tree --dirsfirst --gitignore -L 2
 1. libraries.txt file containing libraries list
 2. README.md
 3. .gitignore to prevent datasets and such going into the repo
+4. ai usage disclosure doc
 
 ### build: contains pre trained models like yolo when running code
 
