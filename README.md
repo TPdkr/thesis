@@ -52,9 +52,8 @@ tree --dirsfirst --gitignore -L 2
 │   ├── ....
 ├── libraries.txt
 ├── ai_usage_disclosure.md
+├── Object specific distance estimation techniques for autonomous driving.pdf
 └── README.md
-
-7 directories, 38 files
 ```
 
 ### Main dir: repository info
@@ -62,6 +61,7 @@ tree --dirsfirst --gitignore -L 2
 2. README.md
 3. .gitignore to prevent datasets and such going into the repo
 4. ai usage disclosure doc
+5. Object specific distance estimation techniques for autonomous driving.pdf -full thesis text
 
 ### build: contains pre trained models like yolo when running code
 
